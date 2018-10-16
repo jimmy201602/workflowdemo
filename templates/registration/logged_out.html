@@ -1,0 +1,126 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" >
+{% load staticfiles %}
+<head>
+    <title>退出站点</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+
+
+    <link rel="stylesheet" href="{% static "bower_components/bootstrap/dist/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/overrides.css" />
+    
+
+    <script type="text/javascript">
+    //<![CDATA[
+        window.__admin_media_prefix__ = "/static/admin/";
+        window.__admin_utc_offset__ = "0";
+    //]]>
+    </script>
+    <script src="{% static "bower_components/jquery/dist/jquery.min.js" %}"></script>
+    <script src="{% static "admin/js/jquery-migrate-1.2.1.min.js" %}"></script>
+    <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+
+    
+
+    <meta name="robots" content="NONE,NOARCHIVE" />
+    <script type="text/javascript">
+    //<![CDATA[
+            (function($) {
+                $(document).ready(function() {
+                    $('input[type="submit"]').addClass('btn');
+                    $('[title]').tooltip();
+                });
+            }(jQuery));
+    //]]>
+    </script>
+</head>
+
+
+<body class="">
+
+<!-- Container -->
+<div class="container">
+
+    
+    <!-- Header -->
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    
+<a class="navbar-brand" href="/">WORKFLOW</a>
+
+                </div>
+                <div id="header-navbar-collapse" class="navbar-collapse collapse navbar-right">
+                    <ul class="nav navbar-nav">
+                        
+                        
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </div>
+    </div>
+    <!-- END Header -->
+    <div class="row">
+        <div class="col-sm-12">
+            
+
+        </div>
+    </div>
+    
+
+    <!-- Content -->
+    <div id="content" class="colM">
+        
+        <div class="navbar navbar-default">
+            <div class="navbar-inner">
+                
+                    <div class="navbar-header">
+                        
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#content-navbar-collapse" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        
+                    
+                    
+                        <span class="navbar-brand">退出</span>
+                    
+                    
+                    </div>
+                
+            </div>
+        </div>
+        
+
+        
+        
+        
+
+        
+
+<p>感谢你在本站点花费了一些时间！</p>
+
+<p><a href="{% url 'login' %}" class="btn btn-default">重新登录</a></p>
+
+
+        
+    </div>
+    <!-- END Content -->
+
+    <footer id="footer"></footer>
+</div>
+<!-- END Container -->
+
+</body>
+</html>

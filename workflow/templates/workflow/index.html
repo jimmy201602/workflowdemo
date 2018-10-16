@@ -1,0 +1,48 @@
+{% extends 'adminlte/base.html' %}
+{% load staticfiles %}
+{% if title %}
+    {% block title %}
+        新建工单
+    {% endblock %}
+{% endif %}
+{% block js %}
+<script type="text/javascript" charset="utf8" src="{% static 'datatables/media/js/jquery.dataTables.min.js'%} "></script>
+<script type="text/javascript" charset="utf8" src="{% static 'datatables/media/js/dataTables.bootstrap.min.js'%} "></script>
+{% endblock %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'datatables/media/css/dataTables.bootstrap.min.css' %}">
+{% endblock %}
+
+{% block head_ext %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        {{app_label}}
+        <small>新建工单</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">{{model}}</li>
+    </ol>
+</section>
+{{extra_content}}{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% for workflow in workflows %}
+        <div class="col-md-3 col-sm-6 col-xs-12">
+          <div class="info-box">
+            <span class="info-box-icon bg-aqua"><i class="ion ion-ios-gear-outline"></i></span>
+
+            <div class="info-box-content">
+              <span class="info-box-number"><a href="{% url 'ticketcreate' workflow.id %}">{{workflow.name}}</a></span>
+              <span class="info-box-text">{{workflow.description}}</span>
+            </div>
+            <!-- /.info-box-content -->
+          </div>
+          <!-- /.info-box -->
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

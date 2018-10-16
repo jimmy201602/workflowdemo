@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {% load staticfiles %}
+  {%load i18n%}
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{% block title %} WORKFLOW {% endblock %}</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <!-- Bootstrap 3.3.7 -->
+  <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="{% static 'Ionicons/css/ionicons.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'AdminLTE/dist/css/AdminLTE.min.css' %}">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="{% static 'AdminLTE/dist/css/skins/_all-skins.min.css' %}">
+
+  <!--[if lt IE 9]>
+  <script src="{% static 'html5shiv/dist/html5shiv.min.js' %}"></script>
+  <script src="{% static 'respond/dest/respond.min.js' %}"></script>
+  <![endif]-->
+  {% block css %}{% endblock %}
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+  {% block nav-right %}
+{% include 'adminlte/nav-right.html'%}
+  {% endblock %}
+  {% block nav-left %}
+{% include 'adminlte/nav-left.html'%}
+  {% endblock %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+
+    {% block head_ext %}
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Dashboard
+        <small>Control panel</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Dashboard</li>
+      </ol>
+    </section>
+    {% endblock %}
+
+    <section class="content">
+    {% block content %}
+    <!-- Main content -->
+    <!-- /.content -->
+    {% endblock %}
+    </section>
+  </div>
+
+  {% block footer %}
+  <!-- /.content-wrapper -->
+  <footer class="main-footer">
+    <div class="pull-right hidden-xs">
+      <b>Version</b> 0.01
+    </div>
+    <strong>Copyright &copy; 2014-2018 <a href="https://github.com/jimmy201602/workflowdemo">WORKFLOWDEMO</a>.</strong> All rights
+    reserved.
+  </footer>
+  {% endblock %}
+
+
+  <!-- Add the sidebar's background. This div must be placed
+       immediately after the control sidebar -->
+  <div class="control-sidebar-bg"></div>
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+<script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'AdminLTE/dist/js/adminlte.min.js' %}"></script>
+{% block js %}
+{% endblock %}
+</body>
+</html>

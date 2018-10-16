@@ -1,0 +1,92 @@
+{% extends 'adminlte/base.html' %}
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+{% if title %} 
+    {% block title %}
+        新建工单
+    {% endblock %}
+{% endif %}
+{% block js %}
+<script type="text/javascript" src="{% static 'select2/dist/js/select2.full.min.js' %}"></script>
+<script src="{% static 'flatpickr/dist/flatpickr.min.js' %}"></script>
+<script type="text/javascript">
+    $('select').select2({
+        theme: "bootstrap"
+    });
+    $('.dateinput').flatpickr();
+    $('.datetimeinput').flatpickr({
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: 'Y-m-d H:i:S',
+        enableSeconds:true
+    });
+
+    function objectifyForm(formArray) {//serialize data function
+        var returnArray = {};
+        for (var i = 0; i < formArray.length; i++){
+            returnArray[formArray[i]['name']] = formArray[i]['value'];
+        }
+        return returnArray;
+    }
+    function getformdata(transition_id){
+        var data = $("#id-m-form").serializeArray();
+        console.log(transition_id);
+        return objectifyForm(data);
+    }
+    $('button[type=submit]').on('click', function(e) {
+        $(this).append('<input type="hidden" name="transition_id" value="'+ $(this).attr('transition_id') +'" /> ');
+    });
+</script>
+{{ form.media }}
+{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'select2/dist/css/select2.min.css' %}">
+<link rel="stylesheet" href="{% static 'select2-bootstrap-theme/dist/select2-bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'flatpickr/dist/flatpickr.min.css' %}">
+{% endblock %}
+
+{% block head_ext %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        {{app_label}}
+        <small>{{title|capfirst}}</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">我创建的工单</li>
+    </ol>
+</section>
+{{extra_content}}{% endblock %}
+
+{% block content %}
+    {% if not noform %}
+        <form id="id-m-form" action="" method="post" class="form {% block form_css_class %}form-horizontal{% endblock %}" {% block form_ext_attr %}{% endblock %} role="form">
+            <div class="box">
+                <div class="box-header">
+                </div>
+                <div class="box-body">
+                    {% if form.helper %}
+                        {% crispy form form.helper %}
+                    {% else %}
+                        {% crispy form %}
+                    {% endif %}
+                    <div class="form-group">
+                        <div class="col-xs-offset-2 col-xs-10">
+                            {% block form_bottom_ext %}
+                            {% endblock %}
+                            {% block form_act_btns %}
+                            {% for button in buttons %}
+                                <button type="submit" class="btn btn-primary" transition_id='{{button.transition_id}}'>{{button.transition_name}}</button>
+                            {% endfor %}
+                            <button type="button" class="btn btn-default goback" onclick="history.back()">Cancel</button>
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    {% else %}
+        <div class="text-center text-danger"><h3>业务流程未初始化配置</h3></div>
+    {% endif %}
+{% endblock %}

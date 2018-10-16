@@ -1,0 +1,284 @@
+{% extends 'adminlte/base.html' %}
+{% load staticfiles %}
+{% if title %} 
+    {% block title %}
+        工单详情
+    {% endblock %}
+{% endif %}
+{% block js %}
+<script type="text/javascript" charset="utf8" src="{% static 'datatables/media/js/jquery.dataTables.min.js'%} "></script>
+<script type="text/javascript" charset="utf8" src="{% static 'datatables/media/js/dataTables.bootstrap.min.js'%} "></script>
+<script type="text/javascript" charset="utf8" src="{%static 'js/datatableview.js' %}"></script>
+<script type="text/javascript" src="{% static "plugins/steps/lib.js" %}"></script>
+<!-- toastr js-->
+<script src="{% static "plugins/toastr/toastr.min.js" %}"></script>
+<script type="application/javascript">
+    function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                            }
+                    }
+            }
+            return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+    function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+            }
+    });
+    function submitsuggestion(transition_id,field_require_check){
+        var comment = $("#comment").val();
+        if (field_require_check && comment == ""){
+            toastr['error']("必须填写处理意见！");
+            return false;
+        }
+        var data = {"username": "{{request.user.username}}", "transition_id": transition_id, "suggestion": comment};
+            $.ajax({
+            url: '{% url 'ticketdetail' ticket_id %}',
+            type: 'PATCH',
+            data: JSON.stringify(data),
+            success: function(data, textStatus, jqXHR) {
+                if (data.code != -1) {
+                    window.location.href = "{% url 'ticket-all'  %}?username=" + '{{request.user.username}}' + "&category=all"
+                }else{
+                    toastr['error'](data.msg);
+                }
+            },
+            error: function(data, textStatus, jqXHR) {
+                toastr['error'](data);
+            }
+        });
+    }
+
+    $(function () {
+        $('#sample_3').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "iDisplayLength": 50,
+            "autoWidth": false,
+        });
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+        $.ajax({
+            url: '{% url 'ticketflowsteps' ticket_id%}',
+            type: 'GET',
+            data: {'username':'{{request.user.username}}'},
+            success: function(data, textStatus, jqXHR) {
+                    <!--console.log(data);-->
+                    var step = 1 ;
+                    if (data.code == 0){
+                        var html = '';
+                        for (var i = 0; i < data.data.value.length; i++) {
+                            if ( data.data.value[i].state_flow_log_list.length >=1 && data.data.value[i].state_flow_log_list[0].transition.transition_name != "拒绝"){
+                                step = i
+                            }
+                            html += '<li><a>'+ data.data.value[i].state_name + '</a></li>';
+                        }
+                        $('#flowsteps').append(html);
+                        if (step != data.data.value.length ){
+                            bsStep(step+2);
+                        }else{
+                            bsStep(step+1);
+                        }
+                    }else{
+                        toastr['warning'](data.msg);
+                    }
+            },
+            error: function(data, textStatus, jqXHR) {
+                toastr['error'](data);
+            }
+        });
+        $.ajax({
+            url: '{% url 'ticketdetail' ticket_id%}',
+            type: 'GET',
+            data: {'username':'{{request.user.username}}'},
+            success: function(data, textStatus, jqXHR) {
+                    if (data.code == 0){
+                        var html = '';
+                        var num = 0;
+                        for (var i = 0; i < data.data.value.field_list.length; i++) {
+                            num += 1;
+                            html += '<th>'+ data.data.value.field_list[i].field_name + '</th><td>' + data.data.value.field_list[i].field_value + '</td>';
+                            if (num == 2){
+                                num = 0
+                                html = '<tr>' + html + '</tr>';
+                            }
+                        }
+                        $('#ticketdetail').append(html);
+                        //处理意见
+                        $('#ticketdetail').append('<tr><th>处理意见</th><td><textarea wrap="soft" placeholder="请输入处理意见" rows="4" class="form-control" id="comment"></textarea></td></tr>');
+                    }else{
+                        toastr['warning'](data.msg);
+                    }
+            },
+            error: function(data, textStatus, jqXHR) {
+                toastr['error'](data);
+            }
+        });
+        $.ajax({
+            url: '{% url 'ticketflowlogs' ticket_id%}',
+            type: 'GET',
+            data: {'username':'{{request.user.username}}'},
+            success: function(data, textStatus, jqXHR) {
+                    if (data.code == 0){
+                        var html = '';
+                        for (var i = 0; i < data.data.value.length; i++) {
+                            if ( data.data.value[i].suggestion ==''){
+                                html += '<tr><td>'+data.data.value[i].state.state_name+'</td><td>'+data.data.value[i].participant+'</td><td>'+data.data.value[i].gmt_modified+'</td><td>'+'--------'+'</td></tr>';
+                            }else{
+                                html += '<tr><td>'+data.data.value[i].state.state_name+'</td><td>'+data.data.value[i].participant+'</td><td>'+data.data.value[i].gmt_modified+'</td><td>'+data.data.value[i].suggestion+'</td></tr>';
+                            }
+                        }
+                        $('#ticketlogs').append(html);
+                    }else{
+                        toastr['warning'](data.msg);
+                    }
+            },
+            error: function(data, textStatus, jqXHR) {
+                toastr['error'](data);
+            }
+        });
+        $.ajax({
+            url: '{% url 'tickettranstion' ticket_id%}',
+            type: 'GET',
+            data: {'username':'{{request.user.username}}'},
+            success: function(data, textStatus, jqXHR) {
+                    if (data.code == 0){
+                        var html = '';
+                        for (var i = 0; i < data.data.value.length; i++) {
+                            html += '<button type="button" class="btn btn-info" onclick=submitsuggestion(' + data.data.value[i].transition_id + ',' + data.data.value[i].field_require_check + ')><span>' + data.data.value[i].transition_name + '</span></button>';
+                        }
+                        $('#commentbutton').append(html);
+                    }else{
+                        toastr['warning'](data.msg);
+                    }
+            },
+            error: function(data, textStatus, jqXHR) {
+                toastr['error'](data);
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'datatables/media/css/dataTables.bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static "fm/css/modal.css" %}" />
+<link rel="stylesheet" href="{% static "css/workflow.css" %}" />
+<link rel="stylesheet" href="{% static "css/lbadminlte.css" %}" />
+<link rel="stylesheet" href="{% static "plugins/steps/style.css" %}" />
+<!--toastr css-->
+<link rel="stylesheet" href="{% static "plugins/toastr/toastr.css" %}">
+<style type="text/css">
+    #content {
+        margin: 0 auto; max-width: 800px; padding: 0 20px;
+    }
+    .object-list {
+        margin-top: 30px;
+    }
+    .object {
+        margin-bottom: 30px;
+    }
+    .object-controls {
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block head_ext %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        {{app_label}}
+        <small>{{title|capfirst}}</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">我创建的工单</li>
+    </ol>
+</section>
+{{extra_content}}{% endblock %}
+
+
+{% block content %}
+
+    <div class="row">
+        <fieldset>
+            <legend class='text-center text-info'> 业务流程</legend>
+        </fieldset>
+        <div class="col-md-12">
+            <ul class="nav nav-pills nav-justified step step-arrow" id='flowsteps'>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <fieldset>
+            <legend class='text-center text-info'>工单详情</legend>
+        </fieldset>
+        <div class="col-md-12">
+            <table class="table table-bordered tb-detail wf-act-history">
+              <tbody id="ticketdetail">
+            </tbody></table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-offset-3 col-md-9" id="commentbutton">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <fieldset>
+            <legend class='text-center text-info'> 操作日志</legend>
+        </fieldset>
+
+        <div class="col-md-12">    
+            <table class="table table-bordered gray-th wf-act-history">
+                <thead>
+                    <tr>
+                      <th>节点名称</th>
+                      <th>参与者</th>
+                      <th>操作时间</th>
+                      <th>处理意见</th>
+                    </tr>
+                </thead>
+                <tbody id='ticketlogs'>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
