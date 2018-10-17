@@ -363,7 +363,8 @@ class TicketDetailApi(LoginRequiredMixin,View):
         json_str = request.body.decode('utf-8')
         request_data_dict = json.loads(json_str)
         ins = WorkFlowAPiRequest(appname='ops',username='admin')
-        status,state_result = ins.getdata(parameters=dict(username='admin'),data=request_data_dict,method='patch',url='/api/v1.0/tickets'.format(self.kwargs.get('ticket_id')))
+        status,state_result = ins.getdata(parameters=dict(username='admin'),data=request_data_dict,method='patch',url='/api/v1.0/tickets/{0}'.format(self.kwargs.get('ticket_id')))
+        #handle message bug
         return JsonResponse(data={})
 
 class TicketFlowStep(LoginRequiredMixin,View):
