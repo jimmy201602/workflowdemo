@@ -12,7 +12,7 @@ from crispy_forms.layout import Layout, Div, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText
 import datetime
 import time
-
+from workflow.apirequest import WorkFlowAPiRequest
 
 class Index(LoginRequiredMixin, TemplateView):
     template_name = 'workflow/index.html'
@@ -20,6 +20,10 @@ class Index(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(Index, self).get_context_data(**kwargs)
         #context['workflows'] = Workflow.objects.all()
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,data = ins.getdata(dict(username='admin', per_page=20, name=''),method='get',url='/api/v1.0/workflows')
+        if status:
+            context['workflows'] = data['data']['value']
         return context
 
 
@@ -32,129 +36,199 @@ class Index(LoginRequiredMixin, TemplateView):
         #return context
 
 
-#class TicketCreate(LoginRequiredMixin, FormView):
-    #template_name = 'workflow/ticketcreate.html'
-    #success_url = '/'
+class TicketCreate(LoginRequiredMixin, FormView):
+    template_name = 'workflow/ticketcreate.html'
+    success_url = '/'
 
-    #def get_form_class(self):
-        #form_fields = dict()
-        #workflow_id = self.kwargs.get('workflow_id')
-        #state_result, msg = WorkflowStateService.get_workflow_init_state(
-            #workflow_id)
+    def get_form_class(self):
+        form_fields = dict()
+        workflow_id = self.kwargs.get('workflow_id')
 
-        #if isinstance(state_result, dict) and 'field_list' in state_result.keys():
-            #class DynamicForm(forms.Form):
-                #def __init__(self, *args, **kwargs):
-                    #self.helper = FormHelper()
-                    #self.helper.form_class = 'form-horizontal'
-                    #self.helper.label_class = 'col-md-2'
-                    #self.helper.field_class = 'col-md-8'
-                    ## DictionaryField bug
-                    #self.helper.layout = Layout(
-                        #*[Div(field['field_key'], css_class='form-group') for field in state_result['field_list']])
-                    #super(DynamicForm, self).__init__(*args, **kwargs)
+        #get ticket initial data
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,state_result = ins.getdata(dict(username='admin'),method='get',url='/api/v1.0/workflows/{0}/init_state'.format(workflow_id))
+        """
+        state_result example
+            {
+              'data': {
+                'id': 6,
+                'name': '发起人-新建中',
+                'creator': 'admin',
+                'gmt_created': '2018-05-10 07:34:45',
+                'distribute_type_id': 1,
+                'transition': [
+                  {
+                    'transition_name': '提交',
+                    'transition_id': 7
+                  }
+                ],
+                'order_id': 1,
+                'participant_type_id': 5,
+                'type_id': 1,
+                'is_hidden': False,
+                'field_list': [
+                  {
+                    'boolean_field_display': {
+                      
+                    },
+                    'order_id': 20,
+                    'default_value': None,
+                    'field_name': '标题',
+                    'field_choice': {
+                      
+                    },
+                    'field_key': 'title',
+                    'field_type_id': 5,
+                    'field_value': None,
+                    'field_attribute': 2,
+                    'field_template': '',
+                    'description': '工单的标题'
+                  },
+                  {
+                    'boolean_field_display': {
+                      
+                    },
+                    'order_id': 110,
+                    'default_value': '请填写申请vpn的理由',
+                    'field_name': '申请原因',
+                    'field_choice': {
+                      
+                    },
+                    'field_key': 'vpn_reason',
+                    'field_type_id': 55,
+                    'field_value': None,
+                    'field_attribute': 2,
+                    'field_template': '',
+                    'description': 'vpn申请原因'
+                  }
+                ],
+                'participant': 'creator',
+                'sub_workflow_id': 0,
+                'workflow_id': 2,
+                'label': {
+                  
+                }
+              },
+              'msg': '',
+              'code': 0
+            }
+        """
+        state_result = state_result['data']
+        #set state_result to kwargs to avoid mutiple time to obtain ticket info
+        self.kwargs.update({'state_result':state_result})
 
-            #for field in state_result['field_list']:
-                #FIELD_TYPE_STR = 5  # 字符串类型
-                #FIELD_TYPE_INT = 10  # 整形类型
-                #FIELD_TYPE_FLOAT = 15  # 浮点类型
-                #FIELD_TYPE_BOOL = 20  # 布尔类型
-                #FIELD_TYPE_DATE = 25  # 日期类型
-                #FIELD_TYPE_DATETIME = 30  # 日期时间类型
-                #FIELD_TYPE_RADIO = 35  # 单选框
-                #FIELD_TYPE_CHECKBOX = 40  # 多选框
-                #FIELD_TYPE_SELECT = 45  # 下拉列表
-                #FIELD_TYPE_MULTI_SELECT = 50  # 多选下拉列表
-                #FIELD_TYPE_TEXT = 55  # 文本域
-                #FIELD_TYPE_USERNAME = 60  # 用户名，前端展现时需要调用方系统获取用户列表。loonflow只保存用户名
-                #if field['field_type_id'] == 5:
-                    #form_fields[field['field_key']] = forms.CharField(help_text=field['description'], label=field['field_name'],
-                                                                      #required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
-                                                                      #error_messages={
-                                                                          #'required': field['description']},
-                                                                      #widget=forms.TextInput(attrs={'placeholder': field['field_name']}))
-                #elif field['field_type_id'] in [10, 15]:
-                    #form_fields[field['field_key']] = forms.IntegerField(help_text=field['description'], label=field['field_name'],
-                                                                         #required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
-                                                                         #error_messages={
-                        #'required': field['description']},
-                        #widget=forms.NumberInput(attrs={'placeholder': field['field_name']}))
-                #elif field['field_type_id'] == 20:
-                    #form_fields[field['field_key']] = forms.BooleanField(help_text=field['description'], label=field['field_name'],
-                                                                         #required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
-                                                                         #error_messages={'required': field['description']})
-                #elif field['field_type_id'] == 25:
-                    #form_fields[field['field_key']] = forms.DateField(help_text=field['description'], label=field['field_name'],
-                                                                      #required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
-                                                                      #error_messages={
-                        #'required': field['description']},
-                        #widget=forms.DateInput(attrs={'placeholder': field['field_name'], 'class': 'dateinput'}))
-                #elif field['field_type_id'] == 30:
-                    #form_fields[field['field_key']] = forms.DateTimeField(help_text=field['description'], label=field['field_name'],
-                                                                          #required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
-                                                                          #error_messages={
-                        #'required': field['description']},
-                        #widget=forms.DateTimeInput(attrs={'placeholder': field['field_name'], 'class': 'datetimeinput'}))
-                #elif field['field_type_id'] in [35, 45]:
-                    #form_fields[field['field_key']] = forms.ChoiceField(help_text=field['description'], label=field['field_name'],
-                                                                        #required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
-                                                                        #error_messages={
-                        #'required': field['description']}, choices=[(k, v) for k, v in field['field_choice'].items()])
-                #elif field['field_type_id'] == [40, 50]:
-                    #form_fields[field['field_key']] = forms.MultipleChoiceField(help_text=field['description'], label=field['field_name'],
-                                                                                #required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
-                                                                                #error_messages={
-                        #'required': field['description']}, choices=[(k, v) for k, v in field['field_choice'].items()])
-                #elif field['field_type_id'] == 55:
-                    #form_fields[field['field_key']] = forms.CharField(help_text=field['description'], label=field['field_name'],
-                                                                      #required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
-                                                                      #error_messages={
-                        #'required': field['description']},
-                        #widget=CKEditorUploadingWidget(attrs={'placeholder': field['field_name'], 'cols': 20, 'rows': 10}))
-                #elif field['field_type_id'] == 60:
-                    #form_fields[field['field_key']] = forms.ChoiceField(help_text=field['description'], label=field['field_name'],
-                                                                        #required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
-                                                                        #error_messages={
-                        #'required': field['description']}, choices=[(obj.username, obj.alias) for obj in LoonUser.objects.all()])
-                ## handle read only field
-                #if field['field_attribute'] == 1:
-                    #form_fields[field['field_key']
-                                #].widget.attrs['disabled'] = 'disabled'
-        #else:
-            #raise Http404()
-        #return type('DynamicItemsForm', (DynamicForm,), form_fields)
+        if isinstance(state_result, dict) and 'field_list' in state_result.keys():
+            class DynamicForm(forms.Form):
+                def __init__(self, *args, **kwargs):
+                    self.helper = FormHelper()
+                    self.helper.form_class = 'form-horizontal'
+                    self.helper.label_class = 'col-md-2'
+                    self.helper.field_class = 'col-md-8'
+                    # DictionaryField bug
+                    self.helper.layout = Layout(
+                        *[Div(field['field_key'], css_class='form-group') for field in state_result['field_list']])
+                    super(DynamicForm, self).__init__(*args, **kwargs)
 
-    #def get_context_data(self, **kwargs):
-        #context = super(TicketCreate, self).get_context_data(**kwargs)
-        #context['workflow_id'] = self.kwargs.get('workflow_id')
-        #state_result, msg = WorkflowStateService.get_workflow_init_state(
-            #self.kwargs.get('workflow_id'))
-        #context['state_result'] = state_result
+            for field in state_result['field_list']:
+                FIELD_TYPE_STR = 5  # 字符串类型
+                FIELD_TYPE_INT = 10  # 整形类型
+                FIELD_TYPE_FLOAT = 15  # 浮点类型
+                FIELD_TYPE_BOOL = 20  # 布尔类型
+                FIELD_TYPE_DATE = 25  # 日期类型
+                FIELD_TYPE_DATETIME = 30  # 日期时间类型
+                FIELD_TYPE_RADIO = 35  # 单选框
+                FIELD_TYPE_CHECKBOX = 40  # 多选框
+                FIELD_TYPE_SELECT = 45  # 下拉列表
+                FIELD_TYPE_MULTI_SELECT = 50  # 多选下拉列表
+                FIELD_TYPE_TEXT = 55  # 文本域
+                FIELD_TYPE_USERNAME = 60  # 用户名，前端展现时需要调用方系统获取用户列表。loonflow只保存用户名
+                if field['field_type_id'] == 5:
+                    form_fields[field['field_key']] = forms.CharField(help_text=field['description'], label=field['field_name'],
+                                                                      required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
+                                                                      error_messages={
+                                                                          'required': field['description']},
+                                                                      widget=forms.TextInput(attrs={'placeholder': field['field_name']}))
+                elif field['field_type_id'] in [10, 15]:
+                    form_fields[field['field_key']] = forms.IntegerField(help_text=field['description'], label=field['field_name'],
+                                                                         required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
+                                                                         error_messages={
+                        'required': field['description']},
+                        widget=forms.NumberInput(attrs={'placeholder': field['field_name']}))
+                elif field['field_type_id'] == 20:
+                    form_fields[field['field_key']] = forms.BooleanField(help_text=field['description'], label=field['field_name'],
+                                                                         required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
+                                                                         error_messages={'required': field['description']})
+                elif field['field_type_id'] == 25:
+                    form_fields[field['field_key']] = forms.DateField(help_text=field['description'], label=field['field_name'],
+                                                                      required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
+                                                                      error_messages={
+                        'required': field['description']},
+                        widget=forms.DateInput(attrs={'placeholder': field['field_name'], 'class': 'dateinput'}))
+                elif field['field_type_id'] == 30:
+                    form_fields[field['field_key']] = forms.DateTimeField(help_text=field['description'], label=field['field_name'],
+                                                                          required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
+                                                                          error_messages={
+                        'required': field['description']},
+                        widget=forms.DateTimeInput(attrs={'placeholder': field['field_name'], 'class': 'datetimeinput'}))
+                elif field['field_type_id'] in [35, 45]:
+                    form_fields[field['field_key']] = forms.ChoiceField(help_text=field['description'], label=field['field_name'],
+                                                                        required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
+                                                                        error_messages={
+                        'required': field['description']}, choices=[(k, v) for k, v in field['field_choice'].items()])
+                elif field['field_type_id'] == [40, 50]:
+                    form_fields[field['field_key']] = forms.MultipleChoiceField(help_text=field['description'], label=field['field_name'],
+                                                                                required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
+                                                                                error_messages={
+                        'required': field['description']}, choices=[(k, v) for k, v in field['field_choice'].items()])
+                elif field['field_type_id'] == 55:
+                    form_fields[field['field_key']] = forms.CharField(help_text=field['description'], label=field['field_name'],
+                                                                      required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
+                                                                      error_messages={
+                        'required': field['description']},
+                        widget=CKEditorUploadingWidget(attrs={'placeholder': field['field_name'], 'cols': 20, 'rows': 10}))
+                elif field['field_type_id'] == 60:
+                    form_fields[field['field_key']] = forms.ChoiceField(help_text=field['description'], label=field['field_name'],
+                                                                        required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
+                                                                        error_messages={
+                        'required': field['description']}, choices=[(1,1),(2,2)])
+                # handle read only field
+                if field['field_attribute'] == 1:
+                    form_fields[field['field_key']
+                                ].widget.attrs['disabled'] = 'disabled'
+        else:
+            raise Http404()
+        return type('DynamicItemsForm', (DynamicForm,), form_fields)
+
+    def get_context_data(self, **kwargs):
+        context = super(TicketCreate, self).get_context_data(**kwargs)
+        context['workflow_id'] = self.kwargs.get('workflow_id')
+        state_result = self.kwargs.get('state_result',None)
+        context['state_result'] = state_result
         #context['msg'] = msg
-        #if isinstance(state_result, dict) and 'field_list' in state_result.keys() and len(state_result['field_list']) == 0:
-            #context['noform'] = True
-        #if isinstance(state_result, dict) and 'transition' in state_result.keys():
-            #context['buttons'] = state_result['transition']
-        #return context
+        if isinstance(state_result, dict) and 'field_list' in state_result.keys() and len(state_result['field_list']) == 0:
+            context['noform'] = True
+        if isinstance(state_result, dict) and 'transition' in state_result.keys():
+            context['buttons'] = state_result['transition']
+        return context
 
-    #def form_valid(self, form):
-        ## save ticket
-        #if 'transition_id' in form.data.keys():
-            #transition_id = form.data['transition_id']
-            #form_data = form.cleaned_data
-            #form_data['transition_id'] = int(transition_id)
-            #form_data['username'] = self.request.user.username
-            #form_data['workflow_id'] = int(self.kwargs.get('workflow_id'))
-            #for key, value in form_data.items():
-                #if isinstance(value, datetime.datetime):
-                    #form_data[key] = form.data[key]
-            #new_ticket_result, msg = TicketBaseService.new_ticket(form_data)
-            #print(new_ticket_result, msg)
-            ## if new_ticket_result:
-            ## code, data = 0, {'ticket_id': new_ticket_result}
-            ## else:
-            ## code, data = -1, {}
-        #return super().form_valid(form)
+    def form_valid(self, form):
+        # save ticket
+        if 'transition_id' in form.data.keys():
+            transition_id = form.data['transition_id']
+            form_data = form.cleaned_data
+            form_data['transition_id'] = int(transition_id)
+            form_data['username'] = self.request.user.username
+            form_data['workflow_id'] = int(self.kwargs.get('workflow_id'))
+            for key, value in form_data.items():
+                if isinstance(value, datetime.datetime):
+                    form_data[key] = form.data[key]
+            new_ticket_result, msg = TicketBaseService.new_ticket(form_data)
+            print(new_ticket_result, msg)
+            # if new_ticket_result:
+            # code, data = 0, {'ticket_id': new_ticket_result}
+            # else:
+            # code, data = -1, {}
+        return super().form_valid(form)
 
 
 #class MyTicket(LoginRequiredMixin, TemplateView):

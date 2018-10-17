@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'workflowdemo',
     'crispy_forms',
     'adminlte',
-    'workflow'
+    'workflow',
+    'ckeditor',    
 ]
 
 MIDDLEWARE = [

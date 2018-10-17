@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 
-from workflow.views import Index#, MyTicket, MyToDoTicket, MyRelatedTicket, AllTicket, TicketDetail, TicketCreate
+from workflow.views import Index ,TicketCreate#, MyTicket, MyToDoTicket, MyRelatedTicket, AllTicket, TicketDetail, TicketCreate
 
 urlpatterns = [
     url(r'^$', Index.as_view(), name='workflow-index'),
@@ -14,6 +14,6 @@ urlpatterns = [
     #url(r'^states/(?P<state_id>[0-9]+)', StateView.as_view()),
     #url(r'^ticket/(?P<ticket_id>[0-9]+)/$',
         #TicketDetail.as_view(), name='ticketdetailtable'),
-    #url(r'^ticket/(?P<workflow_id>[0-9]+)/new/$',
-        #TicketCreate.as_view(), name='ticketcreate'),
+    url(r'^ticket/(?P<workflow_id>[0-9]+)/new/$',
+        TicketCreate.as_view(), name='ticketcreate'),
 ]

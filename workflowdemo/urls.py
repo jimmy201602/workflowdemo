@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path,include,re_path
 from django.contrib.auth.views import LoginView, LogoutView
+from django.views.static import serve
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,5 +25,13 @@ urlpatterns = [
     path('accounts/login/',
         LoginView.as_view(template_name='admin/login.html'), name='login'),
     path('accounts/logout/',
-        LogoutView.as_view(template_name='registration/logged_out.html'), name='logout'),    
+        LogoutView.as_view(template_name='registration/logged_out.html'), name='logout'),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+    
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve,
+            {'document_root': settings.MEDIA_ROOT, }),
+    ]

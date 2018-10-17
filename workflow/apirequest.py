@@ -26,7 +26,6 @@ class WorkFlowAPiRequest(object):
         headers = self.getrequestheader()
         try:
             r = getattr(requests,method)('{0}{1}'.format(self.workflowbackendurl,url), headers=headers, params=parameters,timeout=timeout)
-            print(r.content)
             result = r.json()
             return True,result
         except:
