@@ -22,7 +22,7 @@ class WorkFlowAPiRequest(object):
         headers = dict(signature=signature, timestamp=timestamp, appname=self.appname)        
         return headers
 
-    def getdata(self,parameters=dict(),method='get',url='/api/v1.0/workflows',timeout=300,data=dict()):
+    def getdata(self,parameters=dict(),method='get',url='/api/v1.0/workflows/',timeout=300,data=dict()):
         if method not in ['get','post','put','delete','patch']:
             return False,'method must be one of get post put delete or patch'
         if not isinstance(parameters,dict):

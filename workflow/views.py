@@ -5,7 +5,7 @@ try:
 except ImportError:
     import json
 from django import forms
-from django.http import Http404
+from django.http import Http404,JsonResponse
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Field
@@ -339,6 +339,71 @@ class AllTicket(LoginRequiredMixin, TemplateView):
         context['msg'] = state_result['msg']
         return context
 
+
+class TicketDetailApi(View):
+    def get(self, request, *args, **kwargs):
+        """
+        获取工作流列表
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        request_data = request.GET
+        name = request_data.get('name', '')
+        per_page = int(request_data.get('per_page', 10))
+        page = int(request_data.get('page', 1))
+        username = request_data.get('username', '')  # 后续会根据username做必要的权限控制
+
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,state_result = ins.getdata(parameters=dict(username='admin'),method='get',url='/api/v1.0/tickets/{0}'.format(self.kwargs.get('ticket_id')))
+        return JsonResponse(data=state_result)
+
+class TicketFlowStep(View):
+    """
+    工单流转step: 用于显示工单当前状态的step图(线形结构，无交叉)
+    """
+
+    def get(self, request, *args, **kwargs):
+        request_data = request.GET
+        ticket_id = kwargs.get('ticket_id')
+        username = request_data.get(
+            'username', request.user.username)  # 可用于权限控制
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,state_result = ins.getdata(parameters=dict(username='admin'),method='get',url='/api/v1.0/tickets/{0}/flowsteps'.format(self.kwargs.get('ticket_id')))
+        return JsonResponse(data=state_result)
+
+class TicketFlowlog(View):
+    """
+    工单流转记录
+    """
+
+    def get(self, request, *args, **kwargs):
+        request_data = request.GET
+        ticket_id = kwargs.get('ticket_id')
+        username = request_data.get(
+            'username', request.user.username)  # 可用于权限控制
+        per_page = int(request_data.get('per_page', 10))
+        page = int(request_data.get('page', 1))
+
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,state_result = ins.getdata(parameters=dict(username='admin'),method='get',url='/api/v1.0/tickets/{0}/flowlogs'.format(self.kwargs.get('ticket_id')))
+        return JsonResponse(data=state_result)
+
+class TicketTransition(View):
+    """
+    工单可以做的操作
+    """
+
+    def get(self, request, *args, **kwargs):
+        request_data = request.GET
+        ticket_id = kwargs.get('ticket_id')
+        username = request_data.get('username', '')
+        if not username:
+            return api_response(-1, '参数不全，请提供username', '')
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,state_result = ins.getdata(parameters=dict(username='admin'),method='get',url='/api/v1.0/tickets/{0}/transitions'.format(self.kwargs.get('ticket_id')))
+        return JsonResponse(data=state_result)
 
 #class WorkflowView(View):
     #def get(self, request, *args, **kwargs):
