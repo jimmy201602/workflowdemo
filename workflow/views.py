@@ -340,7 +340,7 @@ class AllTicket(LoginRequiredMixin, TemplateView):
         return context
 
 
-class TicketDetailApi(View):
+class TicketDetailApi(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
         """
         获取工作流列表
@@ -359,7 +359,14 @@ class TicketDetailApi(View):
         status,state_result = ins.getdata(parameters=dict(username='admin'),method='get',url='/api/v1.0/tickets/{0}'.format(self.kwargs.get('ticket_id')))
         return JsonResponse(data=state_result)
 
-class TicketFlowStep(View):
+    def patch(self,request,*args,**kwargs):
+        json_str = request.body.decode('utf-8')
+        request_data_dict = json.loads(json_str)
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,state_result = ins.getdata(parameters=dict(username='admin'),data=request_data_dict,method='patch',url='/api/v1.0/tickets'.format(self.kwargs.get('ticket_id')))
+        return JsonResponse(data={})
+
+class TicketFlowStep(LoginRequiredMixin,View):
     """
     工单流转step: 用于显示工单当前状态的step图(线形结构，无交叉)
     """
@@ -373,7 +380,7 @@ class TicketFlowStep(View):
         status,state_result = ins.getdata(parameters=dict(username='admin'),method='get',url='/api/v1.0/tickets/{0}/flowsteps'.format(self.kwargs.get('ticket_id')))
         return JsonResponse(data=state_result)
 
-class TicketFlowlog(View):
+class TicketFlowlog(LoginRequiredMixin,View):
     """
     工单流转记录
     """
@@ -390,7 +397,7 @@ class TicketFlowlog(View):
         status,state_result = ins.getdata(parameters=dict(username='admin'),method='get',url='/api/v1.0/tickets/{0}/flowlogs'.format(self.kwargs.get('ticket_id')))
         return JsonResponse(data=state_result)
 
-class TicketTransition(View):
+class TicketTransition(LoginRequiredMixin,View):
     """
     工单可以做的操作
     """
