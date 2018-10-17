@@ -27,13 +27,13 @@ class Index(LoginRequiredMixin, TemplateView):
         return context
 
 
-#class TicketDetail(LoginRequiredMixin, TemplateView):
-    #template_name = 'workflow/ticketdetail.html'
+class TicketDetail(LoginRequiredMixin, TemplateView):
+    template_name = 'workflow/ticketdetail.html'
 
-    #def get_context_data(self, **kwargs):
-        #context = super(TicketDetail, self).get_context_data(**kwargs)
-        #context['ticket_id'] = kwargs.get('ticket_id')
-        #return context
+    def get_context_data(self, **kwargs):
+        context = super(TicketDetail, self).get_context_data(**kwargs)
+        context['ticket_id'] = kwargs.get('ticket_id')
+        return context
 
 
 class TicketCreate(LoginRequiredMixin, FormView):
@@ -222,8 +222,12 @@ class TicketCreate(LoginRequiredMixin, FormView):
             for key, value in form_data.items():
                 if isinstance(value, datetime.datetime):
                     form_data[key] = form.data[key]
-            new_ticket_result, msg = TicketBaseService.new_ticket(form_data)
-            print(new_ticket_result, msg)
+
+            #for test only
+            form_data['username'] = 'admin'
+            ins = WorkFlowAPiRequest(appname='ops',username='admin')
+            status,state_result = ins.getdata(data=form_data,method='post',url='/api/v1.0/tickets')
+            print('111',status, state_result)
             # if new_ticket_result:
             # code, data = 0, {'ticket_id': new_ticket_result}
             # else:
@@ -231,104 +235,109 @@ class TicketCreate(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-#class MyTicket(LoginRequiredMixin, TemplateView):
-    #template_name = 'workflow/my.html'
+class MyTicket(LoginRequiredMixin, TemplateView):
+    template_name = 'workflow/my.html'
 
-    #def get_context_data(self, **kwargs):
-        #context = super(MyTicket, self).get_context_data(**kwargs)
-        #request_data = self.request.GET
-        #sn = request_data.get('sn', '')
-        #title = request_data.get('title', '')
-        #username = request_data.get('username', '')
-        #create_start = request_data.get('create_start', '')
-        #create_end = request_data.get('create_end', '')
-        #workflow_ids = request_data.get('workflow_ids', '')
-        #reverse = int(request_data.get('reverse', 1))
-        #per_page = int(request_data.get('per_page', 10))
-        #page = int(request_data.get('page', 1))
-        ## 待办,关联的,创建
-        #category = request_data.get('category')
-        #ticket_result_restful_list, msg = TicketBaseService.get_ticket_list(sn=sn, title=title, username=username,
-                                                                            #create_start=create_start, create_end=create_end,
-                                                                            #workflow_ids=workflow_ids, category=category, reverse=reverse, per_page=per_page, page=page)
-        #context['ticket_result_restful_list'] = ticket_result_restful_list
-        #context['msg'] = msg
-        #return context
-
-
-#class MyToDoTicket(LoginRequiredMixin, TemplateView):
-    #template_name = 'workflow/mytodo.html'
-
-    #def get_context_data(self, **kwargs):
-        #context = super(MyToDoTicket, self).get_context_data(**kwargs)
-        #request_data = self.request.GET
-        #sn = request_data.get('sn', '')
-        #title = request_data.get('title', '')
-        #username = request_data.get('username', '')
-        #create_start = request_data.get('create_start', '')
-        #create_end = request_data.get('create_end', '')
-        #workflow_ids = request_data.get('workflow_ids', '')
-        #reverse = int(request_data.get('reverse', 1))
-        #per_page = int(request_data.get('per_page', 10))
-        #page = int(request_data.get('page', 1))
-        ## 待办,关联的,创建
-        #category = request_data.get('category')
-        #ticket_result_restful_list, msg = TicketBaseService.get_ticket_list(sn=sn, title=title, username=username,
-                                                                            #create_start=create_start, create_end=create_end,
-                                                                            #workflow_ids=workflow_ids, category=category, reverse=reverse, per_page=per_page, page=page)
-        #context['ticket_result_restful_list'] = ticket_result_restful_list
-        #context['msg'] = msg
-        #return context
+    def get_context_data(self, **kwargs):
+        context = super(MyTicket, self).get_context_data(**kwargs)
+        request_data = self.request.GET
+        sn = request_data.get('sn', '')
+        title = request_data.get('title', '')
+        username = request_data.get('username', '')
+        create_start = request_data.get('create_start', '')
+        create_end = request_data.get('create_end', '')
+        workflow_ids = request_data.get('workflow_ids', '')
+        reverse = int(request_data.get('reverse', 1))
+        per_page = int(request_data.get('per_page', 10))
+        page = int(request_data.get('page', 1))
+        # 待办,关联的,创建
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,state_result = ins.getdata(parameters=dict(username='admin',category='owner'),method='get',url='/api/v1.0/tickets')
+        if status:
+            if len(state_result) > 0 and isinstance(state_result,dict) and 'data' in state_result.keys() and 'value' in state_result['data'].keys():
+                context['ticket_result_restful_list'] = state_result['data']['value']
+        context['msg'] = state_result['msg']
+        return context
 
 
-#class MyRelatedTicket(LoginRequiredMixin, TemplateView):
-    #template_name = 'workflow/myrelated.html'
+class MyToDoTicket(LoginRequiredMixin, TemplateView):
+    template_name = 'workflow/mytodo.html'
 
-    #def get_context_data(self, **kwargs):
-        #context = super(MyRelatedTicket, self).get_context_data(**kwargs)
-        #request_data = self.request.GET
-        #sn = request_data.get('sn', '')
-        #title = request_data.get('title', '')
-        #username = request_data.get('username', '')
-        #create_start = request_data.get('create_start', '')
-        #create_end = request_data.get('create_end', '')
-        #workflow_ids = request_data.get('workflow_ids', '')
-        #reverse = int(request_data.get('reverse', 1))
-        #per_page = int(request_data.get('per_page', 10))
-        #page = int(request_data.get('page', 1))
-        ## 待办,关联的,创建
-        #category = request_data.get('category')
-        #ticket_result_restful_list, msg = TicketBaseService.get_ticket_list(sn=sn, title=title, username=username,
-                                                                            #create_start=create_start, create_end=create_end,
-                                                                            #workflow_ids=workflow_ids, category=category, reverse=reverse, per_page=per_page, page=page)
-        #context['ticket_result_restful_list'] = ticket_result_restful_list
-        #context['msg'] = msg
-        #return context
+    def get_context_data(self, **kwargs):
+        context = super(MyToDoTicket, self).get_context_data(**kwargs)
+        request_data = self.request.GET
+        sn = request_data.get('sn', '')
+        title = request_data.get('title', '')
+        username = request_data.get('username', '')
+        create_start = request_data.get('create_start', '')
+        create_end = request_data.get('create_end', '')
+        workflow_ids = request_data.get('workflow_ids', '')
+        reverse = int(request_data.get('reverse', 1))
+        per_page = int(request_data.get('per_page', 10))
+        page = int(request_data.get('page', 1))
+        # 待办,关联的,创建
+        category = request_data.get('category')
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,state_result = ins.getdata(parameters=dict(username='admin',category='duty'),method='get',url='/api/v1.0/tickets')
+        if status:
+            if len(state_result) > 0 and isinstance(state_result,dict) and 'data' in state_result.keys() and 'value' in state_result['data'].keys():
+                context['ticket_result_restful_list'] = state_result['data']['value']
+        context['msg'] = state_result['msg']
+        return context
 
 
-#class AllTicket(LoginRequiredMixin, TemplateView):
-    #template_name = 'workflow/allticket.html'
+class MyRelatedTicket(LoginRequiredMixin, TemplateView):
+    template_name = 'workflow/myrelated.html'
 
-    #def get_context_data(self, **kwargs):
-        #context = super(AllTicket, self).get_context_data(**kwargs)
-        #request_data = self.request.GET
-        #sn = request_data.get('sn', '')
-        #title = request_data.get('title', '')
-        #username = request_data.get('username', '')
-        #create_start = request_data.get('create_start', '')
-        #create_end = request_data.get('create_end', '')
-        #workflow_ids = request_data.get('workflow_ids', '')
-        #reverse = int(request_data.get('reverse', 1))
-        #per_page = int(request_data.get('per_page', 10))
-        #page = int(request_data.get('page', 1))
-        ## 待办,关联的,创建
-        #category = request_data.get('category')
-        #ticket_result_restful_list, msg = TicketBaseService.get_ticket_list(sn=sn, title=title, username=username,
-                                                                            #create_start=create_start, create_end=create_end,
-                                                                            #workflow_ids=workflow_ids, category=category, reverse=reverse, per_page=per_page, page=page)
-        #context['ticket_result_restful_list'] = ticket_result_restful_list
-        #context['msg'] = msg
-        #return context
+    def get_context_data(self, **kwargs):
+        context = super(MyRelatedTicket, self).get_context_data(**kwargs)
+        request_data = self.request.GET
+        sn = request_data.get('sn', '')
+        title = request_data.get('title', '')
+        username = request_data.get('username', '')
+        create_start = request_data.get('create_start', '')
+        create_end = request_data.get('create_end', '')
+        workflow_ids = request_data.get('workflow_ids', '')
+        reverse = int(request_data.get('reverse', 1))
+        per_page = int(request_data.get('per_page', 10))
+        page = int(request_data.get('page', 1))
+        # 待办,关联的,创建
+        category = request_data.get('category')
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,state_result = ins.getdata(parameters=dict(username='admin',category='relation'),method='get',url='/api/v1.0/tickets')
+        if status:
+            if len(state_result) > 0 and isinstance(state_result,dict) and 'data' in state_result.keys() and 'value' in state_result['data'].keys():
+                context['ticket_result_restful_list'] = state_result['data']['value']
+        context['msg'] = state_result['msg']
+        return context
+
+
+class AllTicket(LoginRequiredMixin, TemplateView):
+    template_name = 'workflow/allticket.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(AllTicket, self).get_context_data(**kwargs)
+        request_data = self.request.GET
+        #filter ticket in the future if necessary
+        sn = request_data.get('sn', '')
+        title = request_data.get('title', '')
+        username = request_data.get('username', '')
+        create_start = request_data.get('create_start', '')
+        create_end = request_data.get('create_end', '')
+        workflow_ids = request_data.get('workflow_ids', '')
+        reverse = int(request_data.get('reverse', 1))
+        per_page = int(request_data.get('per_page', 10))
+        page = int(request_data.get('page', 1))
+        # 待办,关联的,创建
+        category = request_data.get('category')
+
+        ins = WorkFlowAPiRequest(appname='ops',username='admin')
+        status,state_result = ins.getdata(parameters=dict(username='admin',category='all'),method='get',url='/api/v1.0/tickets')
+        if status:
+            if len(state_result) > 0 and isinstance(state_result,dict) and 'data' in state_result.keys() and 'value' in state_result['data'].keys():
+                context['ticket_result_restful_list'] = state_result['data']['value']
+        context['msg'] = state_result['msg']
+        return context
 
 
 #class WorkflowView(View):

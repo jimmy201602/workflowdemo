@@ -37,10 +37,10 @@
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="{% url 'workflow-index' %}"><i class="fa fa-circle-o"></i>新建工单</a></li>
-                    <li><a href="#"><i class="fa fa-circle-o"></i>我创建的</a></li>
-                    <li><a href="#"><i class="fa fa-circle-o"></i>我的待办</a></li>
-                    <li><a href="#"><i class="fa fa-circle-o"></i>我相关的</a></li>
-                    <li><a href="#"><i class="fa fa-circle-o"></i>所有工单</a></li>
+                    <li><a href="{% url 'ticket-my' %}"><i class="fa fa-circle-o"></i>我创建的</a></li>
+                    <li><a href="{% url 'ticket-my-todo' %}"><i class="fa fa-circle-o"></i>我的待办</a></li>
+                    <li><a href="{% url 'ticket-my-related' %}"><i class="fa fa-circle-o"></i>我相关的</a></li>
+                    <li><a href="{% url 'ticket-all' %}"><i class="fa fa-circle-o"></i>所有工单</a></li>
                 </ul>
             </li>
         </ul>
