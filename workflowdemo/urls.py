@@ -21,7 +21,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('workflow',include('workflow.urls')),
+    path('workflow/',include('workflow.urls')),
     path('accounts/login/',
         LoginView.as_view(template_name='admin/login.html'), name='login'),
     path('accounts/logout/',
