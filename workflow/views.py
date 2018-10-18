@@ -13,6 +13,7 @@ from crispy_forms.bootstrap import AppendedText, PrependedText
 import datetime
 import time
 from workflow.apirequest import WorkFlowAPiRequest
+from django.contrib.auth.models import User
 
 class Index(LoginRequiredMixin, TemplateView):
     template_name = 'workflow/index.html'
@@ -190,7 +191,7 @@ class TicketCreate(LoginRequiredMixin, FormView):
                     form_fields[field['field_key']] = forms.ChoiceField(help_text=field['description'], label=field['field_name'],
                                                                         required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
                                                                         error_messages={
-                        'required': field['description']}, choices=[(1,1),(2,2)])
+                        'required': field['description']}, choices=[(i.username,i.username) for i in User.objects.all()])
                 # handle read only field
                 if field['field_attribute'] == 1:
                     form_fields[field['field_key']
