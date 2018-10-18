@@ -1,0 +1,115 @@
+.left-side {
+    padding-top: 0px;
+}
+.add-row {
+	display: none;
+}
+.fs_div > .form-group {
+	display: none;
+}
+.checkbox label, .radio label {
+	display: inline;
+}
+.alert .close {
+  text-decoration: none;
+}
+.content-header .right-btns {
+	float: right;
+	font-size: medium;
+	color: #C1C1C1;
+}
+.content-header .right-btns > span:last-child{
+	display: none;
+}
+ul.messages {
+	list-style: none;
+	padding: 0;
+}
+ul.messages li {
+	margin-left: 0;
+	margin-bottom: 8px;
+	padding: 8px;
+}
+.tb-detail th {
+	background: #f3f4f5;
+	text-align: right;
+}
+.table-bordered.tb-detail > thead > tr > th,
+.table-bordered.tb-detail > tbody > tr > th,
+.table-bordered.tb-detail > tfoot > tr > th,
+.table-bordered.tb-detail > thead > tr > td,
+.table-bordered.tb-detail > tbody > tr > td,
+.table-bordered.tb-detail > tfoot > tr > td {
+  border: 1px solid #ddd;
+}
+.tb-detail th.left {
+	text-align: left;
+}
+.tb-detail th.center {
+	text-align: center;
+}
+.tb-detail th.w-mid {
+	width: 150px;
+}
+.tb-acts a {
+	margin-right: 4px;
+}
+.no-margin {
+	margin: 0;
+}
+.tb-contactrecords th {
+	background: #f3f4f5;
+	text-align: left;
+}
+.box-header .rt-btns a {
+	float: right;
+	margin-right: 10px;
+	/* line-height: 40px; */
+	color: #3c8dbc !important;
+}
+.box-header .rt-btns a:hover, .box-header .rt-btns a:active, .box-header .rt-btns a:focus {
+	color: #72afd2 !important;
+}
+.form-group .checkbox {
+	margin-left: 0 !important;
+	margin-right: 4px;
+	margin-top: 4px;
+}
+.text-block {
+	display: block;
+	margin-top: 7px;
+}
+.gray-th th {
+	background: #f3f4f5;
+}
+select[id$="-attachs"] {
+	display: none;
+}
+.attach-upload {
+	display: none !important;
+}
+ul.attachs {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.uploading {
+	display: none;
+}
+.skin-blue  .navbar .nav>li>a:hover, .skin-blue .main-header .navbar .nav>li>a:active, .skin-blue .main-header .navbar .nav>li>a:focus
+{
+  background: #367FA9 !important;
+}
+.no-pointer-events{
+	pointer-events: none
+}
+@media (min-width: 992px) {
+  .modal-lg {
+    width: 900px;
+  }
+}
+@media (min-width: 768px) {
+	.navbar-right {
+		margin-right: 10px;
+	}
+}
