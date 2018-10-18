@@ -18,6 +18,7 @@ from django.urls import path,include,re_path
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.static import serve
 from django.conf import settings
+from workflow.views import Index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +28,7 @@ urlpatterns = [
     path('accounts/logout/',
         LogoutView.as_view(template_name='registration/logged_out.html'), name='logout'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('', Index.as_view(),name='index'),
     
 ]
 
