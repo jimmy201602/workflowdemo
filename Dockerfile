@@ -24,6 +24,7 @@ RUN git checkout develop
 WORKDIR /opt/loonflow/requirements
 RUN pip3 install -r dev.txt
 
+RUN service mysql start
 RUN mysql -u root -e "CREATE DATABASE if not exists loonflownew DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
 RUN mysql -u root -e "CREATE USER loonflownew@127.0.0.1 IDENTIFIED BY '123456'";
 RUN mysql -e "GRANT ALL PRIVILEGES ON loonflownew.* TO 'loonflownew'@'127.0.0.1';"
