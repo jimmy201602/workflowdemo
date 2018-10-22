@@ -142,8 +142,28 @@
                             }
                         }
                         $('#ticketdetail').append(html);
-                        //处理意见
-                        $('#ticketdetail').append('<tr><th>处理意见</th><td><textarea wrap="soft" placeholder="请输入处理意见" rows="4" class="form-control" id="comment"></textarea></td></tr>');
+                        //先处理工单显示，为避免处理意见显示位置错乱,待获取工单详情完成后获取用户可执行的操作action
+                            $.ajax({
+                                url: '{% url 'tickettranstion' ticket_id%}',
+                                type: 'GET',
+                                data: {'username':'{{request.user.username}}'},
+                                success: function(data, textStatus, jqXHR) {
+                                        if (data.code == 0){
+                                            var html = '';
+                                            for (var i = 0; i < data.data.value.length; i++) {
+                                                html += '<button type="button" class="btn btn-info" onclick=submitsuggestion(' + data.data.value[i].transition_id + ',' + data.data.value[i].field_require_check + ')><span>' + data.data.value[i].transition_name + '</span></button>';
+                                            }
+                                            $('#commentbutton').append(html);
+                                            //处理意见
+                                            $('#ticketdetail').append('<tr><th>处理意见</th><td><textarea wrap="soft" placeholder="请输入处理意见" rows="4" class="form-control" id="comment"></textarea></td></tr>');
+                                        }else{
+                                            toastr['warning'](data.msg);
+                                        }
+                                },
+                                error: function(data, textStatus, jqXHR) {
+                                    toastr['error'](data);
+                                }
+                            });
                     }else{
                         toastr['warning'](data.msg);
                     }
@@ -167,25 +187,6 @@
                             }
                         }
                         $('#ticketlogs').append(html);
-                    }else{
-                        toastr['warning'](data.msg);
-                    }
-            },
-            error: function(data, textStatus, jqXHR) {
-                toastr['error'](data);
-            }
-        });
-        $.ajax({
-            url: '{% url 'tickettranstion' ticket_id%}',
-            type: 'GET',
-            data: {'username':'{{request.user.username}}'},
-            success: function(data, textStatus, jqXHR) {
-                    if (data.code == 0){
-                        var html = '';
-                        for (var i = 0; i < data.data.value.length; i++) {
-                            html += '<button type="button" class="btn btn-info" onclick=submitsuggestion(' + data.data.value[i].transition_id + ',' + data.data.value[i].field_require_check + ')><span>' + data.data.value[i].transition_name + '</span></button>';
-                        }
-                        $('#commentbutton').append(html);
                     }else{
                         toastr['warning'](data.msg);
                     }
