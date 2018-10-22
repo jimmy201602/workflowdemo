@@ -25,11 +25,11 @@ WORKDIR /opt/loonflow/requirements
 RUN pip3 install -r dev.txt
 
 #create database user and import data
-RUN service mysql restart
-RUN mysql -uroot -e "CREATE DATABASE if not exists loonflownew DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
-RUN mysql -uroot -e "CREATE USER loonflownew@127.0.0.1 IDENTIFIED BY '123456'";
-RUN mysql -uroot -e "GRANT ALL PRIVILEGES ON loonflownew.* TO 'loonflownew'@'127.0.0.1';"
-RUN mysql --one-database loonflownew < /opt/workflowdemo/loonflow.sql
+#RUN service mysql restart
+#RUN mysql -uroot -e "CREATE DATABASE if not exists loonflownew DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
+#RUN mysql -uroot -e "CREATE USER loonflownew@127.0.0.1 IDENTIFIED BY '123456'";
+#RUN mysql -uroot -e "GRANT ALL PRIVILEGES ON loonflownew.* TO 'loonflownew'@'127.0.0.1';"
+#RUN mysql --one-database loonflownew < /opt/workflowdemo/loonflow.sql
 
 ADD nginx.conf /etc/nginx/nginx.conf
 ADD supervisord.conf /etc/supervisor/supervisord.conf
