@@ -129,7 +129,13 @@
                         var num = 0;
                         for (var i = 0; i < data.data.value.field_list.length; i++) {
                             num += 1;
-                            html += '<th>'+ data.data.value.field_list[i].field_name + '</th><td>' + data.data.value.field_list[i].field_value + '</td>';
+                            //处理select checkbox等数据显示
+                            //field type id equal to 60 bug need to be fixed
+                            if ( data.data.value.field_list[i].field_type_id == 35 || data.data.value.field_list[i].field_type_id == 45 ){
+                                html += '<th>'+ data.data.value.field_list[i].field_name + '</th><td>' + data.data.value.field_list[i].field_choice[data.data.value.field_list[i].field_value] + '</td>';
+                            }else{
+                                html += '<th>'+ data.data.value.field_list[i].field_name + '</th><td>' + data.data.value.field_list[i].field_value + '</td>';
+                            }
                             if (num == 2){
                                 num = 0
                                 html = '<tr>' + html + '</tr>';

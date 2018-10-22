@@ -411,3 +411,13 @@ class TicketTransition(LoginRequiredMixin,View):
         ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
         status,state_result = ins.getdata(parameters=dict(username=self.request.user.username),method='get',url='/api/v1.0/tickets/{0}/transitions'.format(self.kwargs.get('ticket_id')))
         return JsonResponse(data=state_result)
+
+
+class GetUserName(LoginRequiredMixin,View):
+    def get(self, request, *args, **kwargs):
+        user_id = request.GET.get('user_id')
+        try:
+            data = User.objects.all(id=user_id).username
+        except:
+            data = None
+        return JsonResponse(data={'username':data})
