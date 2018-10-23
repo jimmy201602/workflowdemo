@@ -1,6 +1,8 @@
 # workflowdemo
 loonflow demo
 
+# This project is demonstration for [loonflow](https://github.com/blackholll/loonflow.git) 
+[loonflow github](https://github.com/blackholll/loonflow.git) 
 # workflowdemo docker
 docker pull webterminal/workflowdemo
 
