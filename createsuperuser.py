@@ -5,7 +5,7 @@ django.setup()
 from django.contrib.auth.models import User
 
 username = 'admin'
-password = 'password!23456'
+password = '123456'
 email = 'admin@admin.com'
 
 if User.objects.filter(username=username).count() == 0:
