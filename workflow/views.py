@@ -176,7 +176,7 @@ class TicketCreate(LoginRequiredMixin, FormView):
                                                                         required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
                                                                         error_messages={
                         'required': field['description']}, choices=[(k, v) for k, v in field['field_choice'].items()])
-                elif field['field_type_id'] == [40, 50]:
+                elif field['field_type_id'] in [40, 50]:
                     form_fields[field['field_key']] = forms.MultipleChoiceField(help_text=field['description'], label=field['field_name'],
                                                                                 required=True if field['field_attribute'] == 2 else False, initial=field['default_value'],
                                                                                 error_messages={
