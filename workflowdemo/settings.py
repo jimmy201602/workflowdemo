@@ -154,7 +154,10 @@ THUMBNAIL_SIZE = (300, 300)
 CSRF_COOKIE_NAME = 'workflowdemo'
 SESSION_COOKIE_NAME = 'workflowdemosession'
 
-WORKFLOWBACKENDURL = "http://127.0.0.1:8000"
-WORKFLOWTOKEN = "8cd585da-3cc6-11e8-9946-784f437daad6"
 
 LOGIN_REDIRECT_URL = '/'
+
+# 以下为loonflow后端地址及在loonflow中配置的授权应用及token. 初始化sql中是此记录，如果有在loonflow中修改，此处也需要相应修改
+WORKFLOWBACKENDURL = "http://127.0.0.1:8000"
+WORKFLOWTOKEN = "8cd585da-3cc6-11e8-9946-784f437daad6"
+WORKFLOWAPPNAME = "ops"
