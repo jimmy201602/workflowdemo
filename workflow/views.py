@@ -21,8 +21,8 @@ class Index(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(Index, self).get_context_data(**kwargs)
         #context['workflows'] = Workflow.objects.all()
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,data = ins.getdata(dict(username=self.request.user.username, per_page=20, name=''),method='get',url='/api/v1.0/workflows')
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,data = ins.getdata(dict(per_page=20, name=''),method='get',url='/api/v1.0/workflows')
         if status:
             context['workflows'] = data['data']['value']
         return context
@@ -46,8 +46,8 @@ class TicketCreate(LoginRequiredMixin, FormView):
         workflow_id = self.kwargs.get('workflow_id')
 
         #get ticket initial data
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,state_result = ins.getdata(dict(username=self.request.user.username),method='get',url='/api/v1.0/workflows/{0}/init_state'.format(workflow_id))
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,state_result = ins.getdata({},method='get',url='/api/v1.0/workflows/{0}/init_state'.format(workflow_id))
         """
         state_result example
             {
@@ -218,14 +218,14 @@ class TicketCreate(LoginRequiredMixin, FormView):
             transition_id = form.data['transition_id']
             form_data = form.cleaned_data
             form_data['transition_id'] = int(transition_id)
-            form_data['username'] = self.request.user.username
+            # form_data['username'] = self.request.user.username
             form_data['workflow_id'] = int(self.kwargs.get('workflow_id'))
             for key, value in form_data.items():
                 if isinstance(value, datetime.datetime):
                     form_data[key] = form.data[key]
 
             #for test only
-            ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
+            ins = WorkFlowAPiRequest(username=self.request.user.username)
             status,state_result = ins.getdata(data=form_data,method='post',url='/api/v1.0/tickets')
             # if new_ticket_result:
             # code, data = 0, {'ticket_id': new_ticket_result}
@@ -250,8 +250,8 @@ class MyTicket(LoginRequiredMixin, TemplateView):
         per_page = int(request_data.get('per_page', 10))
         page = int(request_data.get('page', 1))
         # 待办,关联的,创建
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,state_result = ins.getdata(parameters=dict(username=self.request.user.username,category='owner'),method='get',url='/api/v1.0/tickets')
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,state_result = ins.getdata(parameters=dict(category='owner'),method='get',url='/api/v1.0/tickets')
         if status:
             if len(state_result) > 0 and isinstance(state_result,dict) and 'data' in state_result.keys() and 'value' in state_result['data'].keys():
                 context['ticket_result_restful_list'] = state_result['data']['value']
@@ -276,8 +276,8 @@ class MyToDoTicket(LoginRequiredMixin, TemplateView):
         page = int(request_data.get('page', 1))
         # 待办,关联的,创建
         category = request_data.get('category')
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,state_result = ins.getdata(parameters=dict(username=self.request.user.username,category='duty'),method='get',url='/api/v1.0/tickets')
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,state_result = ins.getdata(parameters=dict(category='duty'),method='get',url='/api/v1.0/tickets')
         if status:
             if len(state_result) > 0 and isinstance(state_result,dict) and 'data' in state_result.keys() and isinstance(state_result['data'],dict) and 'value' in state_result['data'].keys():
                 context['ticket_result_restful_list'] = state_result['data']['value']
@@ -302,8 +302,8 @@ class MyRelatedTicket(LoginRequiredMixin, TemplateView):
         page = int(request_data.get('page', 1))
         # 待办,关联的,创建
         category = request_data.get('category')
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,state_result = ins.getdata(parameters=dict(username=self.request.user.username,category='relation'),method='get',url='/api/v1.0/tickets')
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,state_result = ins.getdata(parameters=dict(category='relation'),method='get',url='/api/v1.0/tickets')
         if status:
             if len(state_result) > 0 and isinstance(state_result,dict) and 'data' in state_result.keys() and 'value' in state_result['data'].keys():
                 context['ticket_result_restful_list'] = state_result['data']['value']
@@ -330,8 +330,8 @@ class AllTicket(LoginRequiredMixin, TemplateView):
         # 待办,关联的,创建
         category = request_data.get('category')
 
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,state_result = ins.getdata(parameters=dict(username=self.request.user.username,category='all'),method='get',url='/api/v1.0/tickets')
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,state_result = ins.getdata(parameters=dict(category='all'),method='get',url='/api/v1.0/tickets')
         if status:
             if len(state_result) > 0 and isinstance(state_result,dict) and 'data' in state_result.keys() and 'value' in state_result['data'].keys():
                 context['ticket_result_restful_list'] = state_result['data']['value']
@@ -354,15 +354,15 @@ class TicketDetailApi(LoginRequiredMixin,View):
         page = int(request_data.get('page', 1))
         username = request_data.get('username', '')  # 后续会根据username做必要的权限控制
 
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,state_result = ins.getdata(parameters=dict(username=self.request.user.username),method='get',url='/api/v1.0/tickets/{0}'.format(self.kwargs.get('ticket_id')))
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,state_result = ins.getdata(parameters={},method='get',url='/api/v1.0/tickets/{0}'.format(self.kwargs.get('ticket_id')))
         return JsonResponse(data=state_result)
 
     def patch(self,request,*args,**kwargs):
         json_str = request.body.decode('utf-8')
         request_data_dict = json.loads(json_str)
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,state_result = ins.getdata(parameters=dict(username=self.request.user.username),data=request_data_dict,method='patch',url='/api/v1.0/tickets/{0}'.format(self.kwargs.get('ticket_id')))
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,state_result = ins.getdata(parameters={},data=request_data_dict,method='patch',url='/api/v1.0/tickets/{0}'.format(self.kwargs.get('ticket_id')))
         #handle message bug
         return JsonResponse(state_result)
 
@@ -376,8 +376,8 @@ class TicketFlowStep(LoginRequiredMixin,View):
         ticket_id = kwargs.get('ticket_id')
         username = request_data.get(
             'username', request.user.username)  # 可用于权限控制
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,state_result = ins.getdata(parameters=dict(username=self.request.user.username),method='get',url='/api/v1.0/tickets/{0}/flowsteps'.format(self.kwargs.get('ticket_id')))
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,state_result = ins.getdata(parameters={},method='get',url='/api/v1.0/tickets/{0}/flowsteps'.format(self.kwargs.get('ticket_id')))
         return JsonResponse(data=state_result)
 
 class TicketFlowlog(LoginRequiredMixin,View):
@@ -393,8 +393,8 @@ class TicketFlowlog(LoginRequiredMixin,View):
         per_page = int(request_data.get('per_page', 10))
         page = int(request_data.get('page', 1))
 
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,state_result = ins.getdata(parameters=dict(username=self.request.user.username),method='get',url='/api/v1.0/tickets/{0}/flowlogs'.format(self.kwargs.get('ticket_id')))
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,state_result = ins.getdata(parameters={},method='get',url='/api/v1.0/tickets/{0}/flowlogs'.format(self.kwargs.get('ticket_id')))
         return JsonResponse(data=state_result)
 
 class TicketTransition(LoginRequiredMixin,View):
@@ -408,8 +408,8 @@ class TicketTransition(LoginRequiredMixin,View):
         username = request_data.get('username', '')
         if not username:
             return api_response(-1, '参数不全，请提供username', '')
-        ins = WorkFlowAPiRequest(appname='ops',username=self.request.user.username)
-        status,state_result = ins.getdata(parameters=dict(username=self.request.user.username),method='get',url='/api/v1.0/tickets/{0}/transitions'.format(self.kwargs.get('ticket_id')))
+        ins = WorkFlowAPiRequest(username=self.request.user.username)
+        status,state_result = ins.getdata(parameters={},method='get',url='/api/v1.0/tickets/{0}/transitions'.format(self.kwargs.get('ticket_id')))
         return JsonResponse(data=state_result)
 
 
