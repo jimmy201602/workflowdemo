@@ -42,19 +42,16 @@
     function submitsuggestion(transition_id,field_require_check){
         var comment = $("#comment").val();
          paramrs={}
-         for (var i = 0; i<param.length; i++) {
-                      
-                          paramrs[param[i]]  =  $("#"+param[i]).val();
-
-                        } 
-
-
+         for (var i = 0; i<param.length; i++) {                      
+             paramrs[param[i]]  =  $("#"+param[i]).val();
+             } 
+        
         if (field_require_check && comment == ""){
             toastr['error']("必须填写处理意见！");
             return false;
         }
 
-        var data1 = {"username": "{{request.user.username}}", "transition_id": transition_id, "suggestion": comment};
+       var data1 = {"username": "{{request.user.username}}", "transition_id": transition_id, "suggestion": comment};
        var data = Object.assign(data1,paramrs);
             $.ajax({
             url: '{% url 'ticketdetail' ticket_id %}',
