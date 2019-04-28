@@ -41,11 +41,18 @@
     });
     function submitsuggestion(transition_id,field_require_check){
         var comment = $("#comment").val();
+         paramrs={}
+         for (var i = 0; i<param.length; i++) {                      
+             paramrs[param[i]]  =  $("#"+param[i]).val();
+             } 
+        
         if (field_require_check && comment == ""){
             toastr['error']("必须填写处理意见！");
             return false;
         }
-        var data = {"username": "{{request.user.username}}", "transition_id": transition_id, "suggestion": comment};
+
+       var data1 = {"username": "{{request.user.username}}", "transition_id": transition_id, "suggestion": comment};
+       var data = Object.assign(data1,paramrs);
             $.ajax({
             url: '{% url 'ticketdetail' ticket_id %}',
             type: 'PATCH',
@@ -95,7 +102,7 @@
             type: 'GET',
             data: {'username':'{{request.user.username}}'},
             success: function(data, textStatus, jqXHR) {
-                    <!--console.log(data);-->
+
                     var step = 1 ;
                     if (data.code == 0){
                         var html = '';
@@ -127,19 +134,28 @@
                     if (data.code == 0){
                         var html = '';
                         var num = 0;
+                         window.param = new Array();      
                         for (var i = 0; i < data.data.value.field_list.length; i++) {
+                             param.push(data.data.value.field_list[i].field_name);
                             num += 1;
                             //处理select checkbox等数据显示
                             //field type id equal to 60 bug need to be fixed
                             if ( data.data.value.field_list[i].field_type_id == 35 || data.data.value.field_list[i].field_type_id == 45 ){
+                                console.log(data.data)
                                 html += '<th>'+ data.data.value.field_list[i].field_name + '</th><td>' + data.data.value.field_list[i].field_choice[data.data.value.field_list[i].field_value] + '</td>';
-                            }else{
+                          
+                           }else   if ( data.data.value.field_list[i].field_attribute == 1 ){
+                                console.log(data.data)
                                 html += '<th>'+ data.data.value.field_list[i].field_name + '</th><td>' + data.data.value.field_list[i].field_value + '</td>';
+
+                            }else{
+                                 html += '<th>'+ data.data.value.field_list[i].field_name + '</th><td><input type="text" value=' + data.data.value.field_list[i].field_value + ' id=' + data.data.value.field_list[i].field_name +'></td>';
                             }
                             if (num == 2){
                                 num = 0
                                 html = '<tr>' + html + '</tr>';
                             }
+              
                         }
                         $('#ticketdetail').append(html);
                         //先处理工单显示，为避免处理意见显示位置错乱,待获取工单详情完成后获取用户可执行的操作action
@@ -171,6 +187,7 @@
             error: function(data, textStatus, jqXHR) {
                 toastr['error'](data);
             }
+ 
         });
         $.ajax({
             url: '{% url 'ticketflowlogs' ticket_id%}',
