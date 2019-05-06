@@ -1,5 +1,6 @@
 # workflowdemo
 loonflow demo
+这个项目仅仅是个Demo，仅供参考，请按需开发，欢迎提交pr
 
 # This project is demonstration for [loonflow](https://github.com/blackholll/loonflow.git) 
 [loonflow github](https://github.com/blackholll/loonflow.git)
