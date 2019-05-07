@@ -11,7 +11,7 @@ docker pull webterminal/workflowdemo
 docker run -itd -p 80:80 -p 8000:8000 webterminal/workflowdemo
 
 # loonflow admin user and password
-loginurl: http://127.0.0.1/admin
+loginurl: http://127.0.0.1/manage
 
 username: admin
 
