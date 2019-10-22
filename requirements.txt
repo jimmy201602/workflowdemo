@@ -8,5 +8,5 @@ requests==2.19.1
 urllib3==1.23
 django-ckeditor==5.6.1
 django-crispy-forms==1.7.2
-Pillow==5.3.0
+Pillow==6.2.0
 uwsgi
