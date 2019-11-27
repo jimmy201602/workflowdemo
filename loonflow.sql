@@ -140,7 +140,7 @@ LOCK TABLES `account_loonuser` WRITE;
 
 INSERT INTO `account_loonuser` (`id`, `password`, `last_login`, `username`, `alias`, `email`, `phone`, `dept_id`, `is_active`, `is_admin`, `creator`, `gmt_created`, `gmt_modified`, `is_deleted`)
 VALUES
-	(1,'pbkdf2_sha256$100000$BoQZquZL9sE7$OVm0zb1beQeWkas/IJBgxCkx8fqXlu9S0NamjmibSw0=','2018-10-18 10:12:43.423735','admin','超级管理员','blackholll@163.com','13888888888',1,1,1,'admin','2018-04-10 16:24:50.146642','2018-05-09 07:02:42.221182',0),
+	(1,'pbkdf2_sha256$100000$BoQZquZL9sE7$OVm0zb1beQeWkas/IJBgxCkx8fqXlu9S0NamjmibSw0=','2018-10-18 10:12:43.423735','admin','超级管理员','blackholll@1633333333.com','13888888888',1,1,1,'admin','2018-04-10 16:24:50.146642','2018-05-09 07:02:42.221182',0),
 	(2,'12222222',NULL,'guiji','轨迹','guiji@163.com','13888888888',3,1,0,'admin','2018-04-14 23:38:18.390197','2018-05-09 07:00:34.120672',0),
 	(3,'12222222',NULL,'lilei','李磊','lilei@163.com','13888888888',2,1,0,'admin','2018-04-14 23:42:25.708830','2018-05-09 07:00:27.999012',0),
 	(4,'12222222',NULL,'zhangsan','张三','zhangsan@163.com','13888888888',4,1,0,'admin','2018-05-05 22:54:48.910667','2018-05-09 07:02:27.252209',0),
