@@ -28,4 +28,4 @@ password: 123456
 ![demo image](./demo.gif  "demo image")
 
 # 商业版本预览
-![commercial previw](./demo.gif "commercial preview")
+![commercial previw](./commercialpreview.gif "commercial preview")
