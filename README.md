@@ -26,3 +26,6 @@ password: 123456
 
 # Preview
 ![demo image](./demo.gif  "demo image")
+
+# 商业版本预览视频
+[![Usage Video](https://i.ytimg.com/vi/-HwhB21v8L8/1.jpg?time=1527217648531)](https://github.com/jimmy201602/workflowdemo/blob/master/Peek%202021-05-06%2010-51.mp4)
