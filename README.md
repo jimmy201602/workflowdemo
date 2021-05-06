@@ -28,4 +28,6 @@ password: 123456
 ![demo image](./demo.gif  "demo image")
 
 # 商业版本预览
+## 技术栈,前端vue
+## 特点，全拖拽表单设计，工作流程可视化设计
 ![commercial previw](./commericalpreview.gif "commercial preview")
